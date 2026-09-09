@@ -26,7 +26,7 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Root cause:: Port mismatch ,docker was forwarding traffic to port 81 but NGINX was listening on port 80
 - Fix:changed port in docker-compose.yml from :81 to :80 and remover local host binding
 - Retest evidence:ran again  curl http://127.0.0.1:8080/ and got bad gateway 502 instead of no connection
-- Related commit: 8c8d6ed 
+- Related comm/it: 8c8d6ed 
 - Remaining uncertainty:NGINX still getting 502 error 
 
 
@@ -61,7 +61,7 @@ app-02     barq-assessment-app-02                "python -m app.server"   app-02
 
 ## Entry 4 / 9/9/2026 / 6:45pm
 - Symptom: postgress and redis not available
-- Hypothesis: connection settings dont match actual configuration
+- Hypothesis:/ connection settings dont match actual configuration
 - Command or test:  curl http://127.0.0.1:8080/ready
 - Actual output: 
 	{"dependencies":{"postgres":"unavailable","redis":"unavailable"},"instance_id":"app-01","service":"barq-api","status":"not_ready","version":"2.0.0"}
@@ -96,3 +96,14 @@ app-02     barq-assessment-app-02                "python -m app.server"   app-02
 - Related commit: 1f74e10 
 - Remaining uncertainty: None
 
+## Entry 7 / 9/92026  / 10:20pm
+- Symptom: Redis counter resets to zero after container restart
+- Hypothesis: Redis persistance may not be enabled
+- Command or test: curl http://127.0.0.1:8080/counter
+- Actual output: counter reset to 0 after restarting the container
+- Failed attempt and what changed your thinking: enabling the persistence only didn't work , after checking I found I needed to add a volume too
+- Root cause: RDB and AOF persistance disabled and no volume mounted
+- Fix: enabled persistance , added volume to /data
+- Retest evidence: counter doesn't reset after container restart
+- Related commit: 217b12d
+- Remaining uncertainty:None
