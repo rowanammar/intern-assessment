@@ -71,3 +71,15 @@ app-02     barq-assessment-app-02                "python -m app.server"   app-02
 - Retest evidence: 'curl http://127.0.0.1:8080/ready' returns postgres and redis ready 
 - Related commit:4db3da8
 - Remaining uncertainty:None
+
+## Entry 5 / 9/9/2026 / 7:32pm
+- Symptom: /instance always returns "app-01" only even when there are multiple requests
+- Hypothesis: INSTANCE ID of app-02 may not be set correctly
+- Command or test:   curl -s http://127.0.0.1:8080/instance | python3 -c "import sys,json; print(json.load(sys.stdin)['instance_id'])"
+- Actual output: always "app-01"
+- Failed attempt and what changed your thinking:None
+- Root cause: both instances have ID "app-01"
+- Fix: change id of second instance to "app-02"
+- Retest evidence: "curl -s http://127.0.0.1:8080/instance" returned both app-01 and app-02 
+- Related commit: fa5c77a 
+- Remaining uncertainty:None
