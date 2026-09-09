@@ -47,4 +47,15 @@ app-02     barq-assessment-app-02                "python -m app.server"   app-02
 - Remaining uncertainty:NGINX still returning 502 
 
 
+## Entry 3 / 9/9/2026 / 5:41pm
+- Symptom:NGINX returning 502 bad gateway
+- Hypothesis: NGINX listening on wrong port
+- Command or test: docker compose -p barq-assessment logs nginx --tail=20
+- Actual output: connect() failed (111: Connection refused) while connecting to upstream
+- Failed attempt and what changed your thinking:fixed wrong port in NGINX.conf file , still doesn't work
+- Root cause:
+- Fix:
+- Retest evidence:
+- Related commit:
+- Remaining uncertainty:
 
