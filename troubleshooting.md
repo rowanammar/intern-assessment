@@ -39,12 +39,12 @@ NAME       IMAGE                                 COMMAND                  SERVIC
 app-01     barq-assessment-app-01                "python -m app.server"   app-01     About a minute ago   Up About a minute (unhealthy)   8080/tcp
 app-02     barq-assessment-app-02                "python -m app.server"   app-02     About a minute ago   Up About a minute (unhealthy)   8080/tcp
 
-- Failed attempt and what changed your thinking:
-- Root cause:
-- Fix:
-- Retest evidence:
-- Related commit:
-- Remaining uncertainty:
+- Failed attempt and what changed your thinking: None
+- Root cause: typo in docker-compose.yml , url checks for /healthz buut the correct route in flask app file is /health
+- Fix: fixed the typo
+- Retest evidence: 'docker compore ps -a' returned app-01 and app-02 as healthy
+- Related commit:180cb6c
+- Remaining uncertainty:NGINX still returning 502 
 
 
 
