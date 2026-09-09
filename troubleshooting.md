@@ -83,3 +83,16 @@ app-02     barq-assessment-app-02                "python -m app.server"   app-02
 - Retest evidence: "curl -s http://127.0.0.1:8080/instance" returned both app-01 and app-02 
 - Related commit: fa5c77a 
 - Remaining uncertainty:None
+
+## Entry 6 / 9/9/2026 / 8:19pm
+- Symptom: new created records disappear after container restarts
+- Hypothesis: volume may be incorrectly mounted
+- Command or test: curl -s http://127.0.0.1:8080/records
+- Actual output: the added record is not there
+- Failed attempt and what changed your thinking: None
+- Root cause: the mount volume in docker-compose.yml was set incorrectly to "- postgres-data:/var/lib/postgresql/backup" and 
+- Fix: changed it to the correct "/var/lib/postgresql/data" and deleted the tmpfs gettting saved to RAM
+- Retest evidence: "curl -s http://127.0.0.1:8080/records" returned added record even after container restart
+- Related commit: 1f74e10 
+- Remaining uncertainty: None
+
