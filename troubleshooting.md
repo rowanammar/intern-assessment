@@ -59,3 +59,15 @@ app-02     barq-assessment-app-02                "python -m app.server"   app-02
 - Related commit: 72bb166 
 - Remaining uncertainty: None
 
+## Entry 4 / 9/9/2026 / 6:45pm
+- Symptom: postgress and redis not available
+- Hypothesis: connection settings dont match actual configuration
+- Command or test:  curl http://127.0.0.1:8080/ready
+- Actual output: 
+	{"dependencies":{"postgres":"unavailable","redis":"unavailable"},"instance_id":"app-01","service":"barq-api","status":"not_ready","version":"2.0.0"}
+- Failed attempt and what changed your thinking: none
+- Root cause: typo in config/app.env and wrong default ports
+- Fix: fixed the typo and wrote correct ports 
+- Retest evidence: 'curl http://127.0.0.1:8080/ready' returns postgres and redis ready 
+- Related commit:4db3da8
+- Remaining uncertainty:None
