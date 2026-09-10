@@ -119,7 +119,7 @@ app-02     barq-assessment-app-02                "python -m app.server"   app-02
 - Related commit: ebff24e 
 - Remaining uncertainty: None
 
-## Entry 9 / 10/10/2026 / 2:40pm
+## Entry 9 / 10/9/2026 / 2:40pm
 - Symptom: PostgreSQL (15432) and Redis (16379) accessible from host machine
 - Hypothesis: ports are published in docker-compose.yml
 - Command or test: docker compose -p barq-assessment ps 
@@ -130,3 +130,17 @@ app-02     barq-assessment-app-02                "python -m app.server"   app-02
 - Retest evidence: 'curl --max-time 2 127.0.0.1:15432' refused to connect
 - Related commit: e97aa88
 - Remaining uncertainty:None
+
+## Entry 10 / 10/9/2026 / 3:10pm
+- Symptom: NGINX can reach postgres and redis hostnames
+- Hypothesis: NGINX is connected to the backend network
+- Command or test:  docker exec nginx sh -c "curl --max-time 2 http://postgres:5432/ 
+- Actual output: curl: (52) Empty reply from server
+- Failed attempt and what changed your thinking: None
+- Root cause: BGINX is set to be on frontend and backend networks in doker-compose.yml
+- Fix: changed NGINX network to access frontend only
+- Retest evidence: "curl --max-time 2 http://postgres:5432/ " returned "curl: (28) Resolving timed out after 2001 milliseconds"
+- Related commit: 71293ee 
+- Remaining uncertainty: None
+
+
