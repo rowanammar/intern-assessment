@@ -1,5 +1,4 @@
 # Troubleshooting journal
-
 Keep chronological entries. Copy this block for each meaningful investigation.
 
 ## Entry / date / time
@@ -119,3 +118,15 @@ app-02     barq-assessment-app-02                "python -m app.server"   app-02
 - Retest evidence: got app-01 all times after testing with ' for i in 1 2 3 4 ; do curl -s http://127.0.0.1:8080/health | python3 -c "import sys,json; print(json.load(sys.stdin)['instance_id'])"; '
 - Related commit: ebff24e 
 - Remaining uncertainty: None
+
+## Entry 9 / 10/10/2026 / 2:40pm
+- Symptom: PostgreSQL (15432) and Redis (16379) accessible from host machine
+- Hypothesis: ports are published in docker-compose.yml
+- Command or test: docker compose -p barq-assessment ps 
+- Actual output: Shows both postgres and redis ports
+- Failed attempt and what changed your thinking: None
+- Root cause: ports were written in the docker-compose.yml
+- Fix: removed ports line from pstgres and redis in docker-compose.yml
+- Retest evidence: 'curl --max-time 2 127.0.0.1:15432' refused to connect
+- Related commit: e97aa88
+- Remaining uncertainty:None
