@@ -143,4 +143,15 @@ app-02     barq-assessment-app-02                "python -m app.server"   app-02
 - Related commit: 71293ee 
 - Remaining uncertainty: None
 
+## Entry 11 / 10/9/2026 / 6:50pm
+- Symptom: docker container runs as root user
+- Hypothesis: Dockerfile sets USER incorrectly
+- Command or test: docker exec app-01 whoami
+- Actual output: root
+- Failed attempt and what changed your thinking: None
+- Root cause: DockerFile set user to root
+- Fix: changed USER to app , removed copying app enviroment into the container
+- Retest evidence: "docker exec app-01 whoami" returns app
+- Related commit: ca91115
+- Remaining uncertainty: None
 
