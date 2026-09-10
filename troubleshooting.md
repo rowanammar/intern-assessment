@@ -96,7 +96,7 @@ app-02     barq-assessment-app-02                "python -m app.server"   app-02
 - Related commit: 1f74e10 
 - Remaining uncertainty: None
 
-## Entry 7 / 9/92026  / 10:20pm
+## Entry 7 / 9/9/2026  / 10:20pm
 - Symptom: Redis counter resets to zero after container restart
 - Hypothesis: Redis persistance may not be enabled
 - Command or test: curl http://127.0.0.1:8080/counter
@@ -107,3 +107,15 @@ app-02     barq-assessment-app-02                "python -m app.server"   app-02
 - Retest evidence: counter doesn't reset after container restart
 - Related commit: 217b12d
 - Remaining uncertainty:None
+
+## Entry 8 / 10/9/2026 / 1:07pm
+- Symptom: failover not working
+- Hypothesis: NGINX upstream retry is disabled
+- Command or test: curl http://127.0.0.1:8080/health
+- Actual output: after stopping app-02 "curl http://127.0.0.1:8080/health" sometimes returns app-01 and sometimes 502 gateway error , meaning it doesnt retry app-01 as failover
+- Failed attempt and what changed your thinking: None
+- Root cause: 'proxy_next_upstream' was off preventing NGINX from trying alternative backends
+- Fix: changed 'proxy_next_upstream off' to 'proxy_next_upstream error timeout http_502 http_503' , and changed max_fails from 0 to 2
+- Retest evidence: got app-01 all times after testing with ' for i in 1 2 3 4 ; do curl -s http://127.0.0.1:8080/health | python3 -c "import sys,json; print(json.load(sys.stdin)['instance_id'])"; '
+- Related commit: ebff24e 
+- Remaining uncertainty: None
