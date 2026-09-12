@@ -43,3 +43,11 @@ I used Antigravity as a fast search engine to help me find commands and syntax ,
 - What you changed or rejected: made sure it only included things i actually did 
 - How you independently verified it: checked my own docker-compose.yml and git history to make sure the evidence is accurate
 - Related commit: docs commits
+
+## Use 6: architecture diagram
+- Tool/model: Antigravity
+- Purpose: generating the architecture diagram from my docker-compose setup
+- Files or decisions affected: architecture.drawio , architecture.png
+- What you changed or rejected: I gave it my docker-compose file to draw the diagram for me, then I checked the picture to make sure it actually shows the frontend and backend networks correctly and exported it to png
+- How you independently verified it: compared the picture to my own docker-compose.yml to make sure all the ports and health checks match what i actually built
+- Related commit: architecture diagram commit
