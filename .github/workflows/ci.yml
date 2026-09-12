@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Download the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Check that docker-compose.yml is valid YAML
+      - name: Syntax check - docker-compose.yml
+        run: docker compose config --quiet
+
+      # Step 3: Check that the Dockerfile builds without errors
+      - name: Build Docker images
+        run: docker compose build
+
+      # Step 4: Start all the containers in the background
+      - name: Start services
+        run: docker compose up -d
+
+      # Step 5: Wait for all services to be healthy before testing
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for services to become healthy..."
+          for i in $(seq 1 30); do
+            if curl -s --max-time 2 http://localhost:8080/health > /dev/null 2>&1; then
+              echo "Services are ready!"
+              break
+            fi
+            echo "  Attempt $i/30 - not ready yet, waiting 5s..."
+            sleep 5
+          done
+
+      # Step 6: Show the status of all containers (for debugging)
+      - name: Show container status
+        run: docker compose ps
+
+      # Step 7: Run the validation script
+      - name: Run validate.py
+        run: python3 validate.py
+
+      # Step 8: Run the failure and recovery test
+      - name: Run failure_test.py
+        run: python3 failure_test.py
+
+      # Step 9: Clean up (stop and remove everything)
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
