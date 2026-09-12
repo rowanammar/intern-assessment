@@ -51,3 +51,11 @@ I used Antigravity as a fast search engine to help me find commands and syntax ,
 - What you changed or rejected: I gave it my docker-compose file to draw the diagram for me, then I checked the picture to make sure it actually shows the frontend and backend networks correctly and exported it to png
 - How you independently verified it: compared the picture to my own docker-compose.yml to make sure all the ports and health checks match what i actually built
 - Related commit: architecture diagram commit
+
+## Use 7: formatting the readme
+- Tool/model: Antigravity
+- Purpose: writing out the copyable setup and test commands for the final README.md
+- Files or decisions affected: README.md
+- What you changed or rejected: i asked it to look at the scripts I already wrote and format the commands to run them step by step , then I made sure it linked to my other report files at the bottom
+- How you independently verified it: I read through the copyable commands to make sure they actually match how I start and test my own containers locally
+- Related commit: readme commit
