@@ -44,7 +44,7 @@ This is a review requirement, not the number of hidden faults.
 - Implemented fix / commit: wrote restore.sh to load the backup into a temp database first and check if it worked before dropping the real one
 - Production follow-up: use continuous backup tools like pgbackrest instead of simple sql dumps for point in time recovery
 - How to verify: try to run restore.sh with an empty text file and see the script block it from touching the real database
-c
+
 ## 7. Logging/monitoring
 - Risk and evidence: we dont know when the database is getting overloaded until it crashes completely (like the timeout errors we saw at 11:25)
 - Impact: long downtimes because we only react after the app goes offline and customers complain
