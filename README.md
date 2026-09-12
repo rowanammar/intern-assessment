@@ -1,97 +1,118 @@
-<img src="assets/barq-logo.svg" alt="BARQ Systems" width="180">
+# BARQ DevOps Assessment
 
-# DevOps Internship Task - Starter v2
+This repository contains the completed DevOps internship assessment, including the Flask API, PostgreSQL, Redis, and NGINX setup. 
 
-**Due date:** ____________________
+All infrastructure is containerized using Docker and Docker Compose. Below you will find copyable commands to run the entire lifecycle of the project.
 
-**Time window:** 4 calendar days from the invitation email date/time.
+## Requirements
+- Linux or WSL2
+- Python 3.12
+- Git
+- Docker & Docker Compose
 
-Read [the task](assessment/TASK.md), then [the API contract](assessment/APPLICATION.md).
-Everyone receives this same release. The environment is intentionally broken.
-Hidden issue types and count are not disclosed. Investigate this project; do not replace it.
+## 1. Setup & Build
 
-## Included
-
-- Flask API, PostgreSQL, Redis, Docker and NGINX starter files.
-- Three historical logs, a question template and documentation templates.
-- App-only tests and a recorded challenge script.
-- Unimplemented validation, failure-test and backup/restore placeholders.
-
-Use synthetic lab accounts/data only. Supplied values are for this disposable exercise,
-never for real services. Keep the lab on your local machine; do not expose it publicly.
-
-## Before you start
-
-- Linux or WSL2, Python 3.12, Git and Docker with Compose.
-- Docker Desktop must use Linux containers. Run shell scripts in Linux/WSL.
-- Suggested capacity: 2 CPU cores, 4 GB free RAM and 3 GB free disk, plus Docker overhead.
-- Internet for first downloads and GitHub. No cloud account or paid registry required.
-- Use a machine where container names app-01, app-02, nginx, postgres and redis are unused.
-  Do not delete someone else's containers to free those names.
-- Intended public port: 8080 before the video, 8090 after the live change.
-  If either is occupied, ask the organizer for a documented workstation exception.
-
-## Start
-
-Clone the supplied Git bundle/repository. Keep both release commits and the v2 baseline tag.
-Set your own Git name/email before making changes.
-
-From the repository root:
+Clone the repository and set up your local environment variables:
 
 ```bash
-git status
-git log -2 --oneline
+# Clone the repository
+git clone <your-repo-url>
+cd barq-academy
+
+# Create the environment file
 cp .env.example .env
-docker version
-docker compose version
-docker compose -p barq-assessment up --build -d
-docker compose -p barq-assessment ps -a
-docker compose -p barq-assessment logs --no-color
-```
 
-The initial environment is not expected to pass. Record what actually happens.
-The intended URL is http://127.0.0.1:8080; do not assume the starter configuration is correct.
-
-App-only checks use fake dependencies, not real SQL/Redis or Docker networking:
-
-```bash
+# Set up the Python virtual environment for the test scripts
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
-python -m unittest discover -s tests -v
+pip install -r requirements.txt
 ```
 
-## Your work
+## 2. Start
 
-- Complete [assessment/TASK.md](assessment/TASK.md).
-- Implement validate.py, failure_test.py, backup.sh and restore.sh, or documented equivalents.
-  Placeholders deliberately exit 2; they are unfinished deliverables, not validation evidence.
-- Create .github/workflows/ci.yml yourself.
-- Complete the root report templates and docs/EVIDENCE_INDEX.md.
-- Add architecture.png or architecture.pdf.
-- Replace this README with copyable setup/build/run/test/failure/backup/restore/cleanup commands.
-- Commit as you work. Do not commit real secrets, backups, virtual environments or challenge state.
-
-## Recorded challenge
-
-Use the supplied video_challenge.sh unchanged. Read its code if needed; do not run it early.
-After repairing the environment, run it once, for the first time in the video working copy,
-during the continuous 12-18 minute recording. The script requires healthy services, both
-initial instances and the target network layout. Preflight failures make no runtime changes.
+Build the images and start the environment in detached mode:
 
 ```bash
-./video_challenge.sh
+docker compose -p barq-assessment up --build -d
 ```
 
-If you deliberately changed the project name, pass --project YOUR_PROJECT.
-An organizer-approved alternate local URL can be passed with --url http://127.0.0.1:PORT.
-The script touches only matching Compose-owned lab containers/networks.
-Keep the receipt in .assessment/challenge.json for the evidence index. Do not delete the
-one-run marker to retry. A local marker is not tamper-proof; ownership is judged from evidence.
-Do not use docker compose down to reset the runtime challenge.
+Check the status to ensure `nginx`, `app-01`, `app-02`, `postgres`, and `redis` are running and healthy:
 
-## Stop safely
+```bash
+docker compose -p barq-assessment ps
+```
 
-Outside the recorded challenge, docker compose -p barq-assessment down stops this lab.
-Do not use --volumes during persistence tests. Avoid global Docker prune/cleanup commands.
-Back up anything you need before removing containers; investigate whether data actually persists.
+## 3. Test (Validation)
+
+Run the validation script to verify that all endpoints (`/`, `/health`, `/ready`, `/instance`, `/records`, `/counter`), databases, and network isolation are working correctly.
+
+```bash
+source .venv/bin/activate
+python validate.py
+```
+
+## 4. Failure Test
+
+Test the resilience of the environment by simulating a node failure. This script stops one backend instance, verifies NGINX failover, and then recovers the node.
+
+```bash
+source .venv/bin/activate
+python failure_test.py
+```
+
+## 5. Backup & Restore
+
+To take a snapshot of the PostgreSQL database:
+
+```bash
+./backup.sh
+```
+*(This will generate a backup file in the `backups/` directory)*
+
+To restore the database from the latest backup (it safely restores to a temporary database first to verify integrity):
+
+```bash
+./restore.sh
+```
+
+### Persistence Verification
+To verify data survives container recreation:
+```bash
+# 1. Create a test record
+curl -X POST http://127.0.0.1:8080/records -H "Content-Type: application/json" -d '{"data": "persistence_test"}'
+
+# 2. Destroy containers (but keep volumes)
+docker compose -p barq-assessment down
+
+# 3. Bring them back up
+docker compose -p barq-assessment up -d
+
+# 4. Check that the record is still there
+curl http://127.0.0.1:8080/records
+```
+
+## 6. Cleanup (Stop)
+
+To safely stop the lab without destroying persistent volumes:
+
+```bash
+docker compose -p barq-assessment down
+```
+
+To completely destroy the lab including the PostgreSQL and Redis data volumes (Warning: data will be lost):
+
+```bash
+docker compose -p barq-assessment down -v
+```
+
+---
+
+## Documentation & Reports
+
+Detailed answers to the assessment questions can be found in the accompanying reports:
+- [Troubleshooting Journal](troubleshooting.md): Investigation logs, failed attempts, and root causes.
+- [Log Analysis](log_analysis.md): Patterns, script outputs, and evidence.
+- [Technical Decisions](decisions.md): Architecture choices, ports, timeouts, retries, and trade-offs.
+- [Security Review](security_review.md): Identified risks, single points of failure, and production improvements.
+- [AI Usage](AI_USAGE.md): How AI was used and verified during the task.
+- [Architecture Diagram](architecture.png): Visual mapping of request flows, networks, and storage.
