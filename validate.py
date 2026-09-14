@@ -6,7 +6,7 @@ import subprocess
 import sys
 import time
 
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://localhost:8090"
 TIMEOUT = 5
 MAX_WAIT = 60
 

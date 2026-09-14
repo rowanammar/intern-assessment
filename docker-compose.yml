@@ -9,70 +9,77 @@ x-app: &app
     APP_PORT: "8080"
     APP_MESSAGE: "Welcome to BARQ Systems"
   healthcheck:
-    test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=2)"]
+    test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=2)" ]
     interval: 5s
     timeout: 3s
     retries: 3
     start_period: 3s
-  networks: [frontend, backend]
+  networks: [ frontend, backend ]
 services:
   postgres:
     image: postgres:16-alpine@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685
     container_name: postgres
     environment:
-        POSTGRES_USER: ${POSTGRES_USER:-barq_app}
-        POSTGRES_DB: ${POSTGRES_DB:-barq_tasks}
-        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER:-barq_app}
+      POSTGRES_DB: ${POSTGRES_DB:-barq_tasks}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U barq_app -d barq_tasks"]
+      test: [ "CMD-SHELL", "pg_isready -U barq_app -d barq_tasks" ]
       interval: 3s
       timeout: 3s
       retries: 10
-    networks: [backend]
+    networks: [ backend ]
     deploy:
       resources:
         limits:
-            cpus: '0.50'
-            memory: 256M
+          cpus: '0.50'
+          memory: 256M
   redis:
     image: redis:7.4-alpine@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
     container_name: redis
-    command: ["redis-server","--appendonly", "yes"]
+    command: [ "redis-server", "--appendonly", "yes" ]
     volumes:
       - redis-data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 3s
       timeout: 2s
       retries: 5
-    networks: [backend]
+    networks: [ backend ]
     deploy:
       resources:
         limits:
-            cpus: '0.50'
-            memory: 128M
-  app-01:
-    <<: *app
-    container_name: app-01
-    environment:
-      <<: *app-env
-      INSTANCE_ID: "app-01"
-  app-02:
-    <<: *app
-    container_name: app-02
-    environment:
-      <<: *app-env
-      INSTANCE_ID: "app-02"
+          cpus: '0.50'
+          memory: 128M
+    app-01:
+      <<: *app
+      container_name: app-01
+      environment:
+        <<: *app-env
+        INSTANCE_ID: "app-01"
+    app-02:
+      <<: *app
+      container_name: app-02
+      environment:
+        <<: *app-env
+        INSTANCE_ID: "app-02"
+    app-03:
+      <<: *app
+      container_name: app-03
+      environment:
+        <<: *app-env
+        INSTANCE_ID: "app-03"
+
   nginx:
     image: nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
     container_name: nginx
-    ports: ["${PUBLIC_PORT:-8080}:80"]
-    volumes: ["./nginx/nginx.conf:/etc/nginx/nginx.conf:ro"]
+    ports: [ "${PUBLIC_PORT:-8080}:80" ]
+    volumes: [ "./nginx/nginx.conf:/etc/nginx/nginx.conf:ro" ]
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:80/ || exit 1"]
+      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:80/ || exit 1" ]
       interval: 5s
       timeout: 3s
       retries: 3
@@ -82,12 +89,14 @@ services:
         condition: service_healthy
       app-02:
         condition: service_healthy
-    networks: [frontend]
+      app-03:
+        condition: service_healthy
+    networks: [ frontend ]
     deploy:
       resources:
         limits:
-            cpus: '0.50'
-            memory: 128M
+          cpus: '0.50'
+          memory: 128M
 networks:
   frontend:
   backend:

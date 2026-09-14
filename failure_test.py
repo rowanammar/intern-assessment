@@ -6,7 +6,7 @@ import subprocess
 import sys
 import time
 
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://localhost:8090"
 TIMEOUT = 5
 BACKEND_TO_KILL = "app-02"
 SURVIVING_BACKEND = "app-01"
