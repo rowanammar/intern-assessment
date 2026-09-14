@@ -54,24 +54,24 @@ services:
         limits:
           cpus: '0.50'
           memory: 128M
-    app-01:
-      <<: *app
-      container_name: app-01
-      environment:
-        <<: *app-env
-        INSTANCE_ID: "app-01"
-    app-02:
-      <<: *app
-      container_name: app-02
-      environment:
-        <<: *app-env
-        INSTANCE_ID: "app-02"
-    app-03:
-      <<: *app
-      container_name: app-03
-      environment:
-        <<: *app-env
-        INSTANCE_ID: "app-03"
+  app-01:
+    <<: *app
+    container_name: app-01
+    environment:
+      <<: *app-env
+      INSTANCE_ID: "app-01"
+  app-02:
+    <<: *app
+    container_name: app-02
+    environment:
+      <<: *app-env
+      INSTANCE_ID: "app-02"
+  app-03:
+    <<: *app
+    container_name: app-03
+    environment:
+      <<: *app-env
+      INSTANCE_ID: "app-03"
 
   nginx:
     image: nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
